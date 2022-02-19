@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: page_head('List - Brands','none')" />
+
+<body>
+    <div class="container-fluid bg-dark">
+
+        <div th:replace="navigation ::menu" />
+
+
+    </div>
+    <div class="container-fluid">
+        <h3 class="m-3 text-center">Brands Manager</h3>
+        <div>
+
+            <div th:replace="fragments :: export('/brands')" class="m-4" />
+            <div th:replace="fragments :: searchKeyword('/brands')" class="m-4">
+
+            </div>
+            <div class="alert alert-success text-center" th:if="${message !=null}">
+                [[${message}]]
+            </div>
+            <table th:if="${totalItems>0}" class="table table-striped table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th th:replace="fragments :: column_link('id',' ID','/brands')" scope="col">
+                        </th>
+                        <th scope="col">Logo</th>
+                        <th th:replace="fragments :: column_link('name',' Name','/brands')" scope="col">
+                        </th>
+                        <th scope="col">Categories</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each=" brand: ${listBrands}">
+                        <th>[[${brand.id}]]</th>
+                        <td>
+                            <img style="width: 100px;" class="img-thumbnail" th:src="@{${brand.pathLogo}}" alt="">
+                        </td>
+                        <td>[[${brand.name}]]</td>
+                        <td>
+                            <strong class="rounded p-1 mr-3  bg-info text-white" th:each=" ca: ${brand.categories}">[[${ca}]]</strong>
+
+
+                        </td>
+                        <td>
+                            <div th:replace="fragments :: edit('/brands',${brand.id})">
+
+                            </div>
+                            <div th:replace="fragments :: delete('/brands/delete/'+${brand.id},true,${brand.id})">
+
+                            </div>
+
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+    <div th:replace="fragments ::page-link('Brands','/brands')"></div>
+
+    <div th:replace="footer ::footer" class="container-fluid bg-dark" />
+    <div th:replace="fragments :: deleteEntity" id="confirModal" class="modal" tabindex="-1" role="dialog"></div>
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('.link-delete').on("click", function (e) {
+                e.preventDefault();
+
+                link = $(this)
+                brand = link.attr("deleId")
+                $("#yesbtn").attr("href", link.attr("href"))
+                $("#confirm-text").text("Are you sure you want delete this brand Id " + brand)
+                $('#confirModal').modal()
+            });
+            console.log($('.link-delete'))
+
+
+
+        });
+
+        function clearFilter() {
+            window.location = '[[@{/brands}]]'
+        }
+
+    </script>
+</body>
+
+</html>

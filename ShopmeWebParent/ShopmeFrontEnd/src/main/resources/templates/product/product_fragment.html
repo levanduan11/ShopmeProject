@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="content" th:remove="tag">
+
+        <div class="card">
+            <a th:href="@{'/p/'+${product.alias}}">
+                <img class="card-img-top" th:src="@{${product.mainImagePath}}" alt="Card image cap">
+        
+            </a>
+            <div class="card-body">
+                <h5 class="card-title">
+                    <a th:href="@{'/p/'+${product.alias}}">
+                        [[${product.shortName}]]
+        
+                    </a>
+                </h5>
+                <div th:if="${product.discountPrice <= 0}">
+                    <strong>
+                        $[[${product.price}]]
+                    </strong>
+                </div>
+                <div th:if="${product.discountPrice >0}">
+                    <strong>
+                        $[[${product.discountPrice}]]
+                    </strong>
+                    <strike>
+                        $[[${product.price}]]
+                    </strike>
+        
+                </div>
+        
+            </div>
+        
+        </div>
+    </div>
+    
+</body>
+</html>

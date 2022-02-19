@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="page_head(title,remove)" th:remove="${remove}">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[[${title}]]</title>
+   
+
+    <link rel="stylesheet" th:href="@{/font/css/all.min.css}">
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    
+</head>
+
+<body>
+
+
+    <!-- page-link -->
+    
+    <div th:fragment="page-link(entity,url)">
+    
+        <ul th:if="${totalItems>0}" class="list-group flex-row m-4 justify-content-center">
+            <li class="list-group-item active">Showing [[${entity}]]</li>
+            <li class="list-group-item">Start [[${entity}]] <strong>[[${startCount}]]</strong> </li>
+            <li class="list-group-item">End [[${entity}]] <strong>[[${endCount}]]</strong></li>
+            <li class="list-group-item">Total [[${entity}]] <strong>[[${totalItems}]]</strong></li>
+    
+        </ul>
+    
+        <h2 th:if="${totalItems ==0}" style="text-align: center;">
+            Not Found [[${entity}]]
+        </h2>
+        <div th:if="${totalItems>1}">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li th:if="${totalPages>1}" th:class="${currentPage >1 ? 'page-item':'page-item disabled' }">
+                        <a class="page-link"
+                            th:href="@{${url}+'/page/'+${currentPage-1}+'?sortField='+${sortField}+'&sortDir='+${sortDir}+${keyword != null ? '&keyword':''}}">Previous</a>
+                    </li>
+    
+                    <li th:class="${currentPage !=i ? 'page-item':'page-item active' }"
+                        th:each=" i: ${#numbers.sequence(1,totalPages)}">
+                        <a class="page-link"
+                            th:href="@{${url}+'/page/'+${i}+'?sortField='+${sortField}+'&sortDir='+${sortDir}+${keyword !=null ? '&keyword':''}}">
+                            [[${i}]]
+                        </a>
+                    </li>
+    
+                    <li th:if="${totalPages>1}" th:class="${currentPage <totalPages ? 'page-item':'page-item disabled' }">
+                        <a class="page-link"
+                            th:href="@{${url}+'/page/'+${currentPage+1}+'?sortField='+${sortField}+'&sortDir='+${sortDir}+${keyword != null ? '&keyword':''}}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    
+    </div>
+
+</body>
+
+</html>

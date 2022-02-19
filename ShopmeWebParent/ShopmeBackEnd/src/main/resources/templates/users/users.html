@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: page_head('List - Shopme Admin','none')" />
+
+<body>
+
+    <div class="container-fluid bg-dark">
+
+        <div th:replace="navigation ::menu" />
+
+
+    </div>
+    <div class="container-fluid">
+        <div>
+            <h1>User Manage</h1>
+
+        </div>
+
+        <div th:replace="fragments :: export('/users')" class="m-4">
+
+
+        </div>
+
+        <div th:replace="fragments :: searchKeyword('/users')" class="m-4">
+
+        </div>
+
+        <div>
+            <div class="alert alert-success text-center" th:if="${message !=null}">
+                [[${message}]]
+            </div>
+            <div class="full-details">
+                <div class="table-responsive-md">
+                    <table th:if="${totalItems>0}" class="table table-striped table-bordered table-hover text-center">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th th:replace="fragments :: column_link('id','User ID','/users')" scope="col" />
+                                
+                                <th scope="col">Photos</th>
+                                <th th:replace="fragments :: column_link('email','E-mail','/users')" scope="col" />
+                                <th th:replace="fragments :: column_link('firstName','FirstName','/users')"
+                                    scope="col" />
+                                <th th:replace="fragments :: column_link('lastName','LastName','/users')" scope="col" />
+                                <th scope="col">Roles</th>
+                                <th th:replace="fragments :: column_link('enabled','Enabled','/users')" scope="col" />
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr th:each="user : ${listUsers}">
+                                <th scope="row">[[${user.id}]]</th>
+                                <td>
+                                    <i th:if="${user.photos==null}" class="fas fa-portrait fa-3x text-secondary"></i>
+                                    <img class="rounded-circle" style="width: 50%;" th:if="${user.photos!=null}"
+                                        th:src="@{${user.photosImagePath}}" alt="">
+                                </td>
+                                <td>[[${user.email}]]</td>
+                                <td>[[${user.firstName}]]</td>
+                                <td>[[${user.LastName}]]</td>
+                                <td>[[${user.roles}]]</td>
+
+                                <!-- <td th:fragment="status(enabled,name,url)">
+                                    <a th:if="${user.enabled ==true}" class="far fa-check-circle fa-2x text-success"
+                                        th:href="@{'/users/'+${user.id}+'/enabled/false'}"
+                                        title="disable this user"></a>
+
+                                    <a th:if="${user.enabled ==false}" class="far fa-check-circle fa-2x text-dark "
+                                        th:href="@{'/users/'+${user.id}+'/enabled/true'}" title="enable this user"></a>
+                                </td> -->
+
+                                <td th:replace="fragments :: status(${user.enabled},'user','/users/'+${user.id})">
+
+                                </td>
+
+                                <td>
+                                    <a title="edit user" th:href="@{/users/edit/(id=${user.id})}"
+                                        class="fas fa-edit fa-2x text-success mr-2"></a>
+                                    <!-- <div th:replace="fragments :: edit('/users',${user.id})">
+
+                                    </div> -->
+
+                                   
+                                    <!-- <a id="deleteUser" th:href="@{'/users/delete/'+${user.id}}" th:userId="${user.id}"
+                                        class="fas fa-trash-alt fa-2x text-danger link-delete"></a> -->
+                                       <div th:replace="fragments :: delete('/users/delete/'+${user.id},true,${user.id})">
+
+                                       </div> 
+
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+
+
+        </div>
+        <div th:replace="fragments ::page-link('User','/users')"></div>
+
+    </div>
+
+    <div th:replace="footer ::footer" class="container-fluid bg-dark" />
+
+
+    <div th:replace="fragments :: deleteEntity" id="confirModal" class="modal" tabindex="-1" role="dialog">
+
+    </div>
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('.link-delete').on("click", function (e) {
+                e.preventDefault();
+
+                link = $(this)
+                userId = link.attr("deleId")
+                $("#yesbtn").attr("href", link.attr("href"))
+                $("#confirm-text").text("Are you sure you want delete this user Id " + userId)
+                $('#confirModal').modal()
+            });
+            console.log($('.link-delete'))
+
+
+
+        });
+        function clearFilter() {
+
+            window.location = "[[@{/users}]]"
+
+        }
+
+
+    </script>
+</body>
+
+</html>

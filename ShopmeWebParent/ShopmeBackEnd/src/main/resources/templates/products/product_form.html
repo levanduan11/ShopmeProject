@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <head th:replace="fragments :: page_head('New - Brands','tag')" />
+    <link rel="stylesheet" th:href="@{/richtext/richtext.min.css}">
+    <script th:src="@{/richtext/jquery.richtext.js}"></script>
+    <script th:src="@{/richtext/jquery.richtext.min.js}"></script>
+
+</head>
+
+
+<body>
+    <div class="container-fluid bg-dark">
+
+        <div th:replace="navigation ::menu" />
+
+
+    </div>
+    <div class="container">
+        <h2 class="m-3 text-center">[[${pageTitle}]]</h2>
+
+        <div class="shadow-lg p-4  bg-white rounded mt-4">
+            <form th:object="${product}" th:action="@{/products/save}" method="post"
+                onsubmit="return checkUniqueName(this)" enctype="multipart/form-data">
+
+                <input type="hidden" th:field="*{id}">
+                <input th:if="${product.category != null}" type="hidden" id="categoryId"
+                    th:value="${product.category.id}">
+
+                <div>
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#overview" role="tab">Overview</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#description" role="tab">Description</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#images" role="tab">Images</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#details" role="tab">Details</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#shipping" role="tab">Shipping</a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane active p-3" id="overview" role="tabpanel">
+                            <div th:replace="products/product_overview :: content">
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="tab-pane" id="description" role="tabpanel">
+
+                            <th:block sec:authorize="hasAnyAuthority('Salesperson')">
+                                <div th:replace="products/product_desciption_read :: content"></div>
+                            </th:block>
+
+                            <th:block sec:authorize="hasAnyAuthority('Admin','Editor')">
+                                <div th:replace="products/product_desciption :: content">
+
+                                </div>
+                            </th:block>
+                        </div>
+
+
+                        <div class="tab-pane" id="images" role="tabpanel">
+                            <th:block sec:authorize="hasAnyAuthority('Salesperson')">
+                                <div th:replace="products/product_images_read :: content"></div>
+
+                            </th:block>
+                            <th:block sec:authorize="hasAnyAuthority('Admin','Editor')">
+                                <div th:replace="products/product_images :: content">
+
+                                </div>
+                            </th:block>
+                        </div>
+
+
+                        <div class="tab-pane" id="details" role="tabpanel">
+                            <th:block sec:authorize="hasAnyAuthority('Salesperson')">
+                                <div th:replace="products/product_details_read :: content"></div>
+                            </th:block>
+                            <th:block sec:authorize="hasAnyAuthority('Admin','Editor')">
+                                <div th:replace="products/product_details :: content">
+
+                                </div>
+                                <div>
+                                    <input type="button" class="btn btn-info" value="Add more details"
+                                        onclick="addNextDetails()" />
+                                </div>
+                            </th:block>
+
+                        </div>
+
+
+
+                        <div class="tab-pane" id="shipping" role="tabpanel">
+                            <th:block sec:authorize="hasAnyAuthority('Salesperson')">
+                                <div th:replace="products/product_shipping_read :: content"></div>
+
+                            </th:block>
+                            <th:block sec:authorize="hasAnyAuthority('Admin','Editor')">
+                                <div th:replace="products/product_shipping :: content">
+    
+                                </div>
+                            </th:block>
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group row" style="margin-top: 50px;">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <input type="submit" class="btn btn-primary" value="save" />
+
+                            <input type="button" class="btn btn-primary m-2 " value="Cancel" id="cancel" />
+                        </div>
+
+
+                    </div>
+                </div>
+
+
+            </form>
+        </div>
+
+    </div>
+
+    <div th:replace="footer ::footer" class="container-fluid bg-dark" />
+    <div th:replace="modal_fragment ::modal_dialog" />
+
+
+    <script>
+        MAX_FILE_SIZE = 502400
+        moduleURL = '[[@{/products}]]'
+        brandModuleURL = '[[@{/brands}]]'
+        defaultImageThumbnail = '[[@{/images/image-thumbnail.png}]]'
+        checkUniqueUrl = '[[@{/products/check_uniqueName}]]'
+
+    </script>
+    <script th:src="@{/js/common_form.js}"></script>
+    <script th:src="@{/js/product_form_overview.js}"> </script>
+    <script th:src="@{/js/product_form_images.js}"> </script>
+    <script th:src="@{/js/product_form_details.js}"> </script>
+
+</body>
+
+
+</html>

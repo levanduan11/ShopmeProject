@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: page_head(${pageTitle},'none')" />
+
+<body>
+    <div class="container-fluid bg-dark">
+
+        <div th:replace="navigation ::menu" />
+
+
+    </div>
+    <h1 class="text-center m-3">welcom shopme</h1>
+
+    <div class="container-fluid">
+
+        <div th:replace="breadcrumb :: content"></div>
+
+
+    </div>
+
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-sm">
+                <div>
+                    <img id="big-image" th:src="@{${product.mainImagePath}}" alt="" class="img-fluid">
+                </div>
+                <div class="row">
+                    <div class="col-md-3 p-2 ">
+                        <div class="border p-3">
+                            <img index="0" class="image-thumbnail" th:src="@{${product.mainImagePath}}" alt=""
+                                height="50px">
+                        </div>
+                    </div>
+                    <th:block th:each=" extra,status: ${product.productImages}">
+                        <div class="col-md-3 p-2">
+                            <div class="border p-3">
+                                <img th:index="${status.count}" class="image-thumbnail" th:src="@{${extra.imagePath}}"
+                                    alt="" height="50px">
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+
+
+            </div>
+
+
+            <div class="col-sm">
+                <div>
+                    <h3>[[${product.name}]]</h3>
+                </div>
+                <div>
+                    <span>
+                        Brand:[[${product.brand.name}]]
+                    </span>
+                </div>
+                <div>
+                    List Price:
+                    <strong th:if="${product.discountPrice <= 0}">
+                        $[[${product.price}]]
+                    </strong>
+                    <strike th:if="${product.discountPrice >0}">
+                        $[[${product.price}]]
+                    </strike>
+                </div>
+                <div th:if="${product.discountPrice >0}">
+                    Price:
+                    <strong>
+                        $[[${product.discountPrice}]]
+                    </strong>
+                    ([[${product.discountPercent}]] % off)
+
+                </div>
+                <div class="mt-3">
+                    <div th:utext="${product.shortDescription}">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <div>
+                    <span th:if="${product.inStock}" class="text-success">
+                        In Stock
+                    </span>
+                    <span th:unless="${product.inStock}" class="text-danger">
+                        Out of Stock
+                    </span>
+                </div>
+                <div class="mt-3">
+                    <input type="text" size="5" class="form-control" value="1" />
+                </div>
+                <div>
+                    <input type="button" class="btn btn-primary mt-3" value="Add to Cart">
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div>
+                    <hr />
+                </div>
+                <div>
+                    <h3>Product Description:</h3>
+                </div>
+                <div th:utext="${product.fullDescription}">
+
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div>
+                    <hr />
+                </div>
+                <div>
+                    <h3>Product Details:</h3>
+                </div>
+                <th:block th:each=" detail: ${product.productDetails}">
+                    <div>
+
+                        <b>[[${detail.name}]]</b>:
+                        <span>[[${detail.value}]]</span>
+                    </div>
+                </th:block>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div th:replace="product/images_carousel ::content" class="container-fluid bg-dark" />
+
+    <div th:replace="footer ::footer" class="container-fluid bg-dark" />
+    <script>
+        $(document).ready(function () {
+            let bigImage = $('#big-image');
+            $('.image-thumbnail').mouseover(
+
+                function () {
+                    let currentImage = $(this).attr('src');
+                    let currentImageIndex = $(this).attr('index');
+
+                    bigImage.attr('src', currentImage);
+                    bigImage.attr('index', currentImageIndex);
+                }
+            )
+
+            bigImage.on('click', function () {
+                $('#carouselModal').modal('show');
+
+                let imageIndex=parseInt(bigImage.attr('index'));
+                $('#carouselExampleIndicators').carousel(imageIndex);
+                
+            });
+
+        });
+    </script>
+</body>
+
+</html>

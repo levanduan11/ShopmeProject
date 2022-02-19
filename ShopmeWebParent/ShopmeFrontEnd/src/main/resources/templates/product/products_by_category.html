@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: page_head(${pageTitle},'none')" />
+
+<body>
+    <div class="container-fluid bg-dark">
+
+        <div th:replace="navigation ::menu" />
+
+
+    </div>
+    <h1 class="text-center m-3">welcom shopme</h1>
+    <div class="container-fluid">
+        <div th:replace="breadcrumb :: content"></div>
+
+
+    </div>
+    <div class="container">
+        <div class="row text-center mb-4">
+            <th:block th:each="cat : ${category.children}">
+                <div class="col" th:if="${cat.enabled == true}">
+                    <a th:href="@{'/c/'+${cat.alias}}">
+                        <img th:src="@{${cat.imagePath}}" alt="">
+                        <p>
+                            [[${cat.name}]]
+                        </p>
+                    </a>
+
+
+                </div>
+            </th:block>
+
+        </div>
+
+        <div class="row">
+            <th:block th:each=" product: ${listProducts}">
+                <div class="col-md-3">
+                  <div th:replace="product/product_fragment ::content">
+
+                  </div>
+
+
+                </div>
+
+            </th:block>
+        </div>
+
+    </div>
+    <div th:replace="fragments :: page-link('product','/c/'+${category.alias})">
+
+    </div>
+
+    <div th:replace="footer ::footer" class="container-fluid bg-dark" />
+</body>
+
+</html>

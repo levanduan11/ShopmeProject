@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head th:replace="fragments :: page_head('List - Products','none')" />
+
+<body>
+    <div class="container-fluid bg-dark">
+
+        <div th:replace="navigation ::menu" />
+
+
+    </div>
+    <div class="container-fluid">
+        <h2 class="m-3 text-center">Product Manager </h2>
+
+        <th:block sec:authorize="hasAnyAuthority('Admin','Editor')">
+            <a th:href="@{'/products/new'}" class="fas fa-user-plus text-muted fa-2x mr-2"></a>
+            <a th:href="@{'/products/export/csv'}" class="fas fa-file-csv fa-2x mr-2 text-muted"></a>
+        </th:block>
+
+
+
+
+        <div class="m-3">
+            <form id="searchForm" th:action="@{/products/page/1}" class="form-inline">
+
+                <input type="hidden" name="sortField" th:value="${sortField}">
+                <input type="hidden" name="sortDir" th:value="${sortDir}">
+
+                <label class=" mb-2">Category:</label>
+                <select name="categoryId" id="dropdownCategory" class="form-control mb-2">
+                    <option value="0">All Categories</option>
+                    <th:block th:each=" cate: ${listCategories}">
+
+                        <option th:value="${cate.id}" th:selected="(${categoryId} == ${cate.id})">[[${cate.name}]]
+                        </option>
+                    </th:block>
+
+                </select>
+
+
+
+                <div class="form-group mx-sm-3 mb-2">
+
+                    <input name="keyword" th:value="${keyword}" type="search" class="form-control" placeholder="search">
+
+                </div>
+                <input type="submit" class="btn btn-primary mb-2 mr-2" value="search" />
+                <input type="button" class="btn btn-secondary mb-2" value="clear" onclick="clearFilter()" />
+            </form>
+        </div>
+
+
+
+
+        <div>
+            <div class="alert alert-success text-center" th:if="${message !=null}">
+                [[${message}]]
+            </div>
+            <table class="table table-striped table-bordered table-hover ">
+                <thead class="thead-dark">
+                    <tr>
+                        <th th:replace="fragments :: column_link('id','ID','/products')" scope="col" />
+
+                        <th scope="col">Main image</th>
+                        <th th:replace="fragments :: column_link('name','Name','/products')" scope="col" />
+
+                        <th>
+                            Brand
+                        </th>
+                        <th>
+                            Category
+                        </th>
+
+                        <th:block sec:authorize="hasAnyAuthority('Admin','Editor')">
+                            <th th:replace="fragments :: column_link('enabled','Enabled','/products')" scope="col" />
+                        </th:block>
+
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="product : ${listProducts}">
+                        <th scope="row">[[${product.id}]]</th>
+                        <td>
+                            <img style="width: 70px;" class="img-thumbnail" id="thumbnail"
+                                th:src="@{${product.mainImagePath}}" alt="Main image preview">
+
+                        </td>
+                        <td>
+                            <a class="link-detail" th:href="@{'/products/detail/'+${product.id}}"
+                                th:title="${product.name}">
+
+                                [[${product.shortName}]]
+                            </a>
+
+                        </td>
+                        <td>[[${product.brand.name}]]</td>
+                        <td>[[${product.category.name}]]</td>
+
+                        <th:block sec:authorize="hasAnyAuthority('Admin','Editor')">
+                            <td
+                                th:replace="fragments :: status(${product.enabled},'product','/products/'+${product.id})">
+
+                            </td>
+                        </th:block>
+                        <td>
+                            <a class="fas fa-file-alt fa-2x icon-green mr-3 link-detail"
+                                th:href="@{'/products/detail/'+${product.id}}"></a>
+
+
+                            <th:block sec:authorize="hasAnyAuthority('Admin','Editor','Salesperson')">
+                                <div th:replace="fragments :: edit('/products',${product.id})">
+
+                                </div>
+                            </th:block>
+
+                            <th:block sec:authorize="hasAnyAuthority('Admin','Editor')">
+                                <div
+                                    th:replace="fragments :: delete('/products/delete/'+${product.id},true,${product.id})">
+
+                                </div>
+                            </th:block>
+
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+
+
+    </div>
+    <div class="modal fade" id="detailModal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+
+            </div>
+
+        </div>
+
+    </div>
+    <div th:replace="fragments ::page-link('Product','/products')"></div>
+    <div th:replace="footer ::footer" class="container-fluid bg-dark" />
+    <div th:replace="fragments :: deleteEntity" id="confirModal" class="modal" tabindex="-1" role="dialog"></div>
+    <script>
+
+        $(document).ready(function () {
+
+            $('.link-delete').on("click", function (e) {
+                e.preventDefault();
+
+                link = $(this)
+                productId = link.attr("deleId")
+                $("#yesbtn").attr("href", link.attr("href"))
+                $("#confirm-text").text("Are you sure you want delete this product Id " + productId)
+                $('#confirModal').modal()
+            });
+
+            $('.link-detail').on('click', function (e) {
+                e.preventDefault()
+                linkDetailUrl = $(this).attr('href')
+
+                $('#detailModal').modal('show').find(".modal-content").load(linkDetailUrl)
+
+            });
+
+
+            $('#dropdownCategory').change(function () {
+
+                $('#searchForm').submit()
+
+            });
+
+        });
+
+        function clearFilter() {
+            window.location = '[[@{/products}]]'
+        }
+
+    </script>
+</body>
+
+</html>

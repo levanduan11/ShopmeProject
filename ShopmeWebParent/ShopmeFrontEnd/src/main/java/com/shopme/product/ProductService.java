@@ -1,0 +1,43 @@
+package com.shopme.product;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.shopme.common.entity.Product;
+import com.shopme.common.exception.ProductNotFoundException;
+
+@Service
+public class ProductService {
+
+	public static final int PAGE=10;
+	public static final int PAGE_SERCH=10;
+	@Autowired
+	private ProductRepository repo;
+	
+	public Page<Product> listByCategory(int pageNum,Integer categoryId) {
+		
+		String categoryIdMatch="-"+String.valueOf(categoryId)+"-";
+		Pageable pageable=PageRequest.of(pageNum-1, PAGE);
+		
+		return repo.listByCategory(categoryId, categoryIdMatch, pageable);
+	}
+	
+	public Product getProduct(String alias) throws ProductNotFoundException {
+		
+		Product product=repo.findByAlias(alias);
+		if (product==null) {
+			throw new ProductNotFoundException("Could not Find any product with alias "+alias);
+		}
+		return product;
+	}
+
+	public Page<Product>search(String keyword,int pageNum){
+
+		Pageable pageable=PageRequest.of(pageNum-1,PAGE_SERCH);
+
+		return repo.search(keyword,pageable);
+	}
+}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="page_head(title,remove)" th:remove="${remove}">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[[${title}]]</title>
+    <link rel="stylesheet" th:href="@{/fontawesome/all.css}">
+
+    <link rel="stylesheet" th:href="@{/font/css/all.min.css}">
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/common.js}"> </script>
+</head>
+
+<body>
+
+    <th th:fragment="column_link(fieldName,columnLabel,url)" scope="col">
+
+        <!-- <a class="text-white"
+            th:href="@{${url}+'/page/'+${currentPage}+'?sortField='+${fieldName}+'&sortDir='+${sortField != sortField ? sortDir : reverSortDir}+${keyword !=null ? '&keyword='+keyword:''}}">
+            [[${columnLabel}]]
+        </a> -->
+
+        <a class="text-white"
+            th:href="@{${url}+'/page/'+${currentPage}+'?sortDir='+${sortField != fieldName ? sortDir : reverSortDir}+'&sortField='+${fieldName}+${keyword !=null ? '&keyword='+keyword:''}+${categoryId != null ? '&categoryId='+categoryId:''}}">
+            [[${columnLabel}]]
+        </a>
+
+        <i th:if="${sortField == fieldName}" th:class="${sortDir == 'asc' ? 'fas fa-sort-up':'fas fa-sort-down'}"></i>
+    </th>
+
+
+    <!-- status -->
+    <td th:fragment="status(enabled,entityName,url)">
+        <a th:if="${enabled ==true}" class="fas fa-check-circle fa-2x text-success" th:href="@{${url}+'/enabled/false'}"
+            th:title="'disable this user'+${entityName}"></a>
+
+        <a th:if="${enabled ==false}" class="fas fa-circle fa-2x text-secondary" th:href="@{${url}+'/enabled/true'}"
+            th:title="'enabled this user'+${entityName}"></a>
+    </td>
+
+    <!-- edit -->
+
+    <div th:fragment="edit(url,id)" th:remove="tag">
+        <a th:href="@{${url}+'/edit/'+${id}}" class="fas fa-edit fa-2x text-success mr-2"></a>
+    </div>
+
+    <!-- delete -->
+    <div th:fragment="delete(url,visable,id)" th:remove="tag">
+        <th:block th:if="${visable}">
+            <a id="deleteUser" th:href="@{${url}}" th:deleId="${id}"
+                class="fas fa-trash-alt fa-2x text-danger link-delete"></a>
+        </th:block>
+    </div>
+
+
+    <!-- page-link -->
+
+    <div th:fragment="page-link(entity,url)">
+
+        <ul th:if="${totalItems>0}" class="list-group flex-row m-4 justify-content-center">
+            <li class="list-group-item active">Showing [[${entity}]]</li>
+            <li class="list-group-item">Start [[${entity}]] <strong>[[${startCount}]]</strong> </li>
+            <li class="list-group-item">End [[${entity}]] <strong>[[${endCount}]]</strong></li>
+            <li class="list-group-item">Total [[${entity}]] <strong>[[${totalItems}]]</strong></li>
+
+        </ul>
+
+        <h2 th:if="${totalItems ==0}" style="text-align: center;">
+            Not Found [[${entity}]]
+        </h2>
+        <div th:if="${totalItems>1}">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li th:if="${totalPages>1}" th:class="${currentPage >1 ? 'page-item':'page-item disabled' }">
+                        <a class="page-link"
+                            th:href="@{${url}+'/page/'+${currentPage-1}+'?sortField='+${sortField}+'&sortDir='+${sortDir}+${keyword != null ? '&keyword':''}+${categoryId != null ? '&categoryId='+categoryId:''}}">Previous</a>
+                    </li>
+
+                    <li th:class="${currentPage !=i ? 'page-item':'page-item active' }"
+                        th:each=" i: ${#numbers.sequence(1,totalPages)}">
+                        <a class="page-link"
+                            th:href="@{${url}+'/page/'+${i}+'?sortField='+${sortField}+'&sortDir='+${sortDir}+${keyword !=null ? '&keyword':''}+${categoryId != null ? '&categoryId='+categoryId:''}}">
+                            [[${i}]]
+                        </a>
+                    </li>
+
+                    <li th:if="${totalPages>1}"
+                        th:class="${currentPage <totalPages ? 'page-item':'page-item disabled' }">
+                        <a class="page-link"
+                            th:href="@{${url}+'/page/'+${currentPage+1}+'?sortField='+${sortField}+'&sortDir='+${sortDir}+${keyword != null ? '&keyword':''}+${categoryId != null ? '&categoryId='+categoryId:''}}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+
+    <!-- search keyword -->
+
+    <div th:fragment="searchKeyword(url)" class="m-4">
+
+        <form th:action="@{${url}+'/page/1'}" class="form-inline">
+
+            <input type="hidden" name="sortField" th:value="${sortField}">
+            <input type="hidden" name="sortDir" th:value="${sortDir}">
+
+            <div class="form-group mx-sm-3 mb-2">
+
+                <input name="keyword" th:value="${keyword}" type="search" class="form-control" placeholder="search">
+
+            </div>
+            <input type="submit" class="btn btn-primary mb-2 mr-2" value="search" />
+            <input type="button" class="btn btn-secondary mb-2" value="clear" onclick="clearFilter()" />
+        </form>
+
+    </div>
+
+    <!-- export data -->
+
+    <div th:fragment="export(url)" class="m-4">
+
+        <a th:href="@{${url}+'/new'}" class="fas fa-user-plus text-muted fa-2x mr-2"></a>
+        <a th:href="@{${url}+'/export/csv'}" class="fas fa-file-csv fa-2x mr-2 text-muted"></a>
+        <a th:href="@{${url}+'/export/excel'}" class="fas fa-file-excel fa-2x mr-2 text-muted"></a>
+        <a th:href="@{${url}+'/export/pdf'}" class="fas fa-file-pdf fa-2x text-muted"></a>
+
+    </div>
+
+    <!-- modal dialog delete entity -->
+
+    <div th:fragment="deleteEntity" id="confirModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirm-text"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">NO</button>
+                    <a class="btn btn-success" href="" id="yesbtn">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

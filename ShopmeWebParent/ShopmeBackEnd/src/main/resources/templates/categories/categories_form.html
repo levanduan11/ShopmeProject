@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: page_head('Category','none')" />
+
+<body>
+    <div class="container-fluid bg-dark">
+
+        <div th:replace="navigation ::menu" />
+
+
+    </div>
+    <div class="container">
+        <h2>[[${pageTitle}]]</h2>
+
+        <div class="shadow-lg p-4  bg-white rounded mt-4">
+            <form th:object="${category}" th:action="@{/categories/save}" method="post" enctype="multipart/form-data"
+                onsubmit="return checkUnique(this)">
+
+                <input type="hidden" th:field="*{id}">
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Category Name</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" th:field="*{name}" placeholder="name" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Alias</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" th:field="*{alias}" placeholder="alias" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="inputState" class="col-sm-2 col-form-label">Parent Category</label>
+                    <div class="col-sm-6">
+                        <select class="form-control" th:field="*{parent}">
+                            <option value="0">[No parent]</option>
+                            <th:block th:each=" cat: ${listCategories}">
+                                <option th:value="${cat.id}">[[${cat.name}]]</option>
+                            </th:block>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="form-group row mt-4">
+                    <div class="col-sm-2">Enabled</div>
+                    <div class="col-sm-10">
+                        <div class="form-check">
+                            <input th:field="*{enabled}" class="form-check-input" type="checkbox" id="gridCheck1">
+
+                        </div>
+                    </div>
+                </div>
+                <fieldset class="form-group mb-4">
+                    <div class="row">
+                        <legend class="col-form-label col-sm-2 pt-0">Image</legend>
+                        <div class="col-sm-10">
+                            <div class="form-check">
+                                <input type="hidden" th:field="*{image}">
+                                <input th:required="${category.imagePath == null}" id="fileImage" name="fileImage"
+                                    accept="image/png,image/jpeg" class="form-check-input" type="file">
+                                <img th:src="@{${category.imagePath}}" id="thumbnail" alt="image preview"
+                                    style="margin-top: 50px;">
+                            </div>
+
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="form-group row" style="margin-top: 50px;">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <input type="submit" class="btn btn-primary" value="save" />
+
+                        <input type="button" class="btn btn-primary m-2 " value="Cancel" id="cancel" />
+                    </div>
+
+
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+
+    <div th:replace="footer ::footer" class="container-fluid bg-dark" />
+    <div th:replace="modal_fragment ::modal_dialog" />
+
+    <script>
+        MAX_FILE_SIZE = 102400
+        moduleURL = '[[@{/categories}]]'
+
+        function checkUnique(form) {
+
+            catId = $("#id").val()
+            catName = $("#name").val()
+            catAlias = $("#alias").val()
+            csrfValue = $("input[name='_csrf']").val()
+
+            url = "[[@{/categories/check_unique}]]";
+
+            params = {
+                id: catId,
+                name: catName,
+                alias: catAlias,
+                _csrf: csrfValue
+            }
+            $.post(url, params,
+                function (response) {
+
+                    if (response == 'OK') {
+                        form.submit()
+                    }
+                    else if (response == 'DuplicateName') {
+
+                        showWarningModal("duplicate Name " + catName)
+
+                    }
+                    else if (response == 'DuplicateAlias') {
+
+                        showWarningModal("duplicate Alias " + catAlias)
+
+                    }
+                    else {
+
+                        showErrorModal("Unknow response from server")
+
+                    }
+
+
+                }
+            ).fail(function () {
+                showModal('Error', "Could not connect to the server")
+            })
+
+            return false;
+        }
+
+
+
+
+
+    </script>
+
+    <script th:src="@{/js/common_form.js}"></script>
+</body>
+
+</html>

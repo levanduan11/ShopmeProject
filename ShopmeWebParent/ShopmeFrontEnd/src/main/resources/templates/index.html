@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: page_head('Shopme','none')" />
+
+<body>
+    <div class="container-fluid bg-dark">
+
+        <div th:replace="navigation ::menu" />
+
+
+    </div>
+    <h1 class="text-center m-3">welcom shopme</h1>
+    <div class="container">
+        <div class="row">
+
+
+            <div class="col-lg-2 col-md-3 col-sm-6" th:each="cat : ${listCategories}">
+                <div class="card">
+                    <img class="card-img-top" th:src="@{${cat.imagePath}}" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a th:href="@{'/c/'+${cat.alias}}">
+
+                                [[${cat.name}]]
+                            </a>
+                        </h5>
+                        
+                        <a th:href="@{'/c/'+${cat.alias}}" class="btn btn-primary">Go to shop</a>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+    </div>
+
+
+    <div th:replace="footer ::footer" class="container-fluid bg-dark" />
+</body>
+
+</html>
